@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Keyword Research — Streamed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      /* =========
+         Design Tokens
+         ========= */
+      :root {
+        --bg: #f7fafc;             /* neutral background (light) */
+        --surface: #ffffff;         /* card surface */
+        --text: #0f172a;            /* high-contrast text */
+        --muted: #64748b;           /* muted text, borders */
+        --primary: #2563eb;         /* primary blue */
+        --accent: #10b981;          /* accent green */
+        --danger: #ef4444;          /* error red (auxiliary) */
+        --ring: rgba(37, 99, 235, 0.25);
+
+        --radius: 12px;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+        --shadow-md: 0 4px 14px rgba(0,0,0,0.08);
+        --shadow-lg: 0 10px 30px rgba(0,0,0,0.10);
+
+        --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Inter, "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        --container: 1100px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b1220;
+          --surface: #0f172a;
+          --text: #e5e7eb;
+          --muted: #94a3b8;
+          --primary: #3b82f6;
+          --accent: #22c55e;
+          --danger: #f87171;
+          --ring: rgba(59, 130, 246, 0.3);
+          --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+          --shadow-md: 0 4px 14px rgba(0,0,0,0.35);
+          --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+        }
+      }
+
+      /* =========
+         Base
+         ========= */
+      * { box-sizing: border-box; }
+      html, body {
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        line-height: 1.5;
+      }
+      body { margin: 0; }
+
+      a { color: var(--primary); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      .container {
+        width: 100%;
+        max-width: var(--container);
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        backdrop-filter: saturate(180%) blur(8px);
+        background: color-mix(in oklab, var(--bg) 80%, transparent);
+        border-bottom: 1px solid color-mix(in oklab, var(--muted) 20%, transparent);
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: .2px;
+      }
+      .brand-mark {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--primary);
+        box-shadow: inset 0 -2px 0 rgba(0,0,0,0.15);
+      }
+
+      main { padding: 24px 0 48px; }
+
+      /* =========
+         Hero / Form
+         ========= */
+      .hero {
+        display: grid;
+        gap: 16px;
+        margin: 24px 0 16px;
+      }
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(22px, 3vw, 30px);
+        line-height: 1.2;
+        letter-spacing: -.2px;
+      }
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 70ch;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid color-mix(in oklab, var(--muted) 22%, transparent);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-md);
+      }
+
+      .search {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+      }
+
+      @media (min-width: 640px) {
+        .search { flex-direction: row; align-items: center; }
+      }
+
+      .input {
+        appearance: none;
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: color-mix(in oklab, var(--surface) 90%, var(--bg));
+        border: 1px solid color-mix(in oklab, var(--muted) 25%, transparent);
+        color: var(--text);
+        outline: none;
+        transition: border .2s ease, box-shadow .2s ease, background .2s ease;
+      }
+      .input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 6px var(--ring);
+      }
+
+      .btn {
+        --btn-bg: var(--primary);
+        --btn-color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        border: 1px solid color-mix(in oklab, var(--primary) 15%, transparent);
+        background: var(--btn-bg);
+        color: var(--btn-color);
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: var(--shadow-sm);
+        transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
+      }
+      .btn:hover { filter: brightness(1.03); box-shadow: var(--shadow-md); }
+      .btn:active { transform: translateY(1px); }
+      .btn:disabled {
+        opacity: .6; cursor: not-allowed; transform: none; filter: none;
+      }
+      .btn.ghost {
+        --btn-bg: transparent;
+        --btn-color: var(--text);
+        border-color: color-mix(in oklab, var(--muted) 25%, transparent);
+      }
+      .btn.success { --btn-bg: var(--accent); }
+      .btn.danger { --btn-bg: var(--danger); }
+
+      /* =========
+         Progress / Logs
+         ========= */
+      .stack { display: grid; gap: 16px; }
+      .section-title { font-size: 14px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); }
+
+      .progress-wrap { padding: 16px; }
+      .progressbar {
+        height: 10px;
+        background: color-mix(in oklab, var(--muted) 15%, transparent);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progressbar > span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary), color-mix(in oklab, var(--primary) 80%, var(--accent)));
+        transition: width .3s ease;
+      }
+
+      .log {
+        max-height: 200px;
+        overflow: auto;
+        padding: 12px;
+        border-radius: 10px;
+        background: color-mix(in oklab, var(--surface) 88%, var(--bg));
+        border: 1px solid color-mix(in oklab, var(--muted) 20%, transparent);
+        font-size: 13px;
+      }
+      .log p { margin: 0; padding: 6px 0; border-bottom: 1px dotted color-mix(in oklab, var(--muted) 15%, transparent); }
+      .log p:last-child { border-bottom: none; }
+
+      /* =========
+         Stats
+         ========= */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding: 16px;
+      }
+      @media (min-width: 640px) {
+        .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      }
+      .stat {
+        padding: 14px;
+        border-radius: 10px;
+        border: 1px solid color-mix(in oklab, var(--muted) 20%, transparent);
+        background: color-mix(in oklab, var(--surface) 92%, var(--bg));
+      }
+      .stat .k { font-size: 12px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+      .stat .v { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+      /* =========
+         Controls
+         ========= */
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-top: 1px solid color-mix(in oklab, var(--muted) 18%, transparent);
+      }
+      .controls .left, .controls .right {
+        display: flex; align-items: center; gap: 10px;
+      }
+      .filter {
+        width: 220px;
+      }
+
+      /* =========
+         Table
+         ========= */
+      .table-wrap {
+        overflow: auto;
+        border-top: 1px solid color-mix(in oklab, var(--muted) 18%, transparent);
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 14px;
+      }
+      thead th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: color-mix(in oklab, var(--surface) 95%, var(--bg));
+        color: var(--muted);
+        text-align: left;
+        font-weight: 600;
+        padding: 12px 14px;
+        border-bottom: 1px solid color-mix(in oklab, var(--muted) 25%, transparent);
+        white-space: nowrap;
+      }
+      th.sortable {
+        cursor: pointer;
+        user-select: none;
+      }
+      th.sortable .arrow {
+        opacity: .45; margin-left: 6px; font-size: 12px;
+      }
+      tbody td {
+        padding: 12px 14px;
+        border-bottom: 1px solid color-mix(in oklab, var(--muted) 18%, transparent);
+      }
+      tbody tr:hover td { background: color-mix(in oklab, var(--surface) 92%, var(--bg)); }
+
+      /* =========
+         Analysis
+         ========= */
+      .analysis {
+        padding: 16px;
+        border-top: 1px solid color-mix(in oklab, var(--muted) 18%, transparent);
+      }
+      details {
+        border: 1px solid color-mix(in oklab, var(--muted) 20%, transparent);
+        border-radius: 10px;
+        padding: 12px 14px;
+        background: color-mix(in oklab, var(--surface) 92%, var(--bg));
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 600;
+        outline: none;
+      }
+      details[open] { background: color-mix(in oklab, var(--surface) 96%, var(--bg)); }
+      .analysis-content { margin-top: 10px; color: var(--text); }
+
+      /* =========
+         Helpers
+         ========= */
+      .hidden { display: none !important; }
+      .sr-only {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container nav">
+        <div class="brand" aria-label="App brand">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>Keyword Research</div>
+        </div>
+        <div class="nav-actions">
+          <a href="#" aria-label="Docs link">Docs</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <section class="hero">
+          <h1 class="text-balance">Discover high-intent keywords. Fast, accurate, and actionable.</h1>
+          <p>Streamed research with live progress, sortable insights, AI-backed analysis, and one‑click CSV export.</p>
+        </section>
+
+        <section class="card" aria-labelledby="search-form-title">
+          <h2 id="search-form-title" class="sr-only">Keyword research form</h2>
+          <form id="research-form" class="search" role="search" aria-describedby="form-help">
+            <label class="sr-only" for="query">Enter a topic or seed keyword</label>
+            <input id="query" class="input" name="query" placeholder="e.g. global internship programs" required />
+            <button id="run" class="btn" type="submit" aria-label="Run research">
+              <span>Run research</span>
+            </button>
+          </form>
+          <div id="form-help" class="sr-only">Type a topic or seed keyword and press Run research.</div>
+
+          <div class="stack progress-wrap">
+            <div class="section-title">Progress</div>
+            <div class="progressbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span id="pb"></span>
+            </div>
+            <div id="log" class="log" aria-live="polite" aria-atomic="false"></div>
+            <div class="controls">
+              <div class="left">
+                <input id="filter" class="input filter" placeholder="Filter keywords..." aria-label="Filter keywords" />
+                <button id="clear" class="btn ghost" type="button" aria-label="Clear results">Clear</button>
+              </div>
+              <div class="right">
+                <button id="export" class="btn success" type="button" disabled aria-disabled="true" aria-label="Export CSV">Export CSV</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats" id="stats" aria-live="polite">
+            <div class="stat"><div class="k">Keywords</div><div class="v" id="s-count">0</div></div>
+            <div class="stat"><div class="k">Avg. Volume</div><div class="v" id="s-volume">0</div></div>
+            <div class="stat"><div class="k">Avg. Competition</div><div class="v" id="s-kd">0</div></div>
+            <div class="stat"><div class="k">Opportunities</div><div class="v" id="s-ops">0</div></div>
+          </div>
+
+          <div class="table-wrap" role="region" aria-label="Keyword results">
+            <table id="table">
+              <thead>
+                <tr>
+                  <th class="sortable" data-key="keyword" scope="col">Keyword <span class="arrow">⇵</span></th>
+                  <th class="sortable" data-key="volume_numeric" scope="col">Volume <span class="arrow">⇵</span></th>
+                  <th class="sortable" data-key="competition" scope="col">Competition <span class="arrow">⇵</span></th>
+                  <th class="sortable" data-key="opportunity_score" scope="col">Opportunity <span class="arrow">⇵</span></th>
+                  <th class="sortable" data-key="total_results" scope="col">Results <span class="arrow">⇵</span></th>
+                </tr>
+              </thead>
+              <tbody id="tbody">
+                 rows 
+              </tbody>
+            </table>
+          </div>
+
+          <div class="analysis">
+            <details id="analysis">
+              <summary>AI Analysis</summary>
+              <div id="analysis-content" class="analysis-content">
+                No analysis yet — run research to generate insights.
+              </div>
+            </details>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      // State
+      let rows = [];
+      let filtered = [];
+      let sortKey = 'opportunity_score';
+      let sortDir = 'desc'; // 'asc' | 'desc'
+      let running = false;
+      let es = null;
+
+      // Elements
+      const form = document.getElementById('research-form');
+      const queryEl = document.getElementById('query');
+      const runBtn = document.getElementById('run');
+      const pb = document.getElementById('pb');
+      const logEl = document.getElementById('log');
+      const filterEl = document.getElementById('filter');
+      const clearBtn = document.getElementById('clear');
+      const exportBtn = document.getElementById('export');
+      const tbody = document.getElementById('tbody');
+      const stats = {
+        count: document.getElementById('s-count'),
+        volume: document.getElementById('s-volume'),
+        kd: document.getElementById('s-kd'),
+        ops: document.getElementById('s-ops'),
+      };
+      const analysisContent = document.getElementById('analysis-content');
+
+      // Utilities
+      const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+      const fmt = new Intl.NumberFormat();
+      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+      function setRunning(val) {
+        running = val;
+        runBtn.disabled = val;
+        queryEl.disabled = val;
+        exportBtn.disabled = val || (rows.length === 0);
+        exportBtn.setAttribute('aria-disabled', String(exportBtn.disabled));
+      }
+
+      function addLog(msg) {
+        const p = document.createElement('p');
+        p.textContent = msg;
+        logEl.appendChild(p);
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      function setProgress(pct) {
+        pct = clamp(pct, 0, 100);
+        pb.style.width = pct + '%';
+        const bar = pb.parentElement;
+        bar.setAttribute('aria-valuenow', String(Math.round(pct)));
+      }
+
+      function computeStats(items) {
+        const n = items.length || 0;
+        const sum = (key) => items.reduce((a, b) => a + (+b[key] || 0), 0);
+        const avg = (key) => n ? Math.round(sum(key) / n) : 0;
+        const opportunities = items.filter(r => (+r.competition <= 35) && (+r.volume_numeric >= 300)).length;
+        return {
+          count: n,
+          volume: avg('volume_numeric'),
+          kd: avg('competition'),
+          ops: opportunities,
+        };
+      }
+
+      function renderStats(items) {
+        const s = computeStats(items);
+        stats.count.textContent = fmt.format(s.count);
+        stats.volume.textContent = fmt.format(s.volume);
+        stats.kd.textContent = fmt.format(s.kd);
+        stats.ops.textContent = fmt.format(s.ops);
+      }
+
+      function renderTable(items) {
+        tbody.innerHTML = '';
+        for (const r of items) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${r.keyword}</td>
+            <td title="${r.volume}">${fmt.format(+r.volume_numeric || 0)}</td>
+            <td>${fmt.format(+r.competition || 0)}</td>
+            <td>${(+r.opportunity_score || 0).toFixed(1)}</td>
+            <td>${fmt.format(+r.total_results || 0)}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+      }
+
+      function applyFilter() {
+        const q = filterEl.value.trim().toLowerCase();
+        filtered = !q ? [...rows] : rows.filter(r => String(r.keyword).toLowerCase().includes(q));
+        applySort();
+      }
+
+      function valueForSort(v) {
+        if (typeof v === 'number') return v;
+        if (!isNaN(+v)) return +v;
+        return String(v ?? '').toLowerCase();
+      }
+
+      function applySort() {
+        filtered.sort((a, b) => {
+          const na = valueForSort(a[sortKey]);
+          const nb = valueForSort(b[sortKey]);
+          if (na < nb) return sortDir === 'asc' ? -1 : 1;
+          if (na > nb) return sortDir === 'asc' ? 1 : -1;
+          return 0;
+        });
+        renderTable(filtered);
+        renderStats(filtered);
+      }
+
+      function updateSort(target) {
+        const key = target.getAttribute('data-key');
+        if (key === sortKey) {
+          sortDir = (sortDir === 'asc') ? 'desc' : 'asc';
+        } else {
+          sortKey = key;
+          sortDir = (key === 'keyword') ? 'asc' : 'desc';
+        }
+        document.querySelectorAll('th.sortable .arrow').forEach(a => a.textContent = '⇵');
+        const arrow = target.querySelector('.arrow');
+        arrow.textContent = sortDir === 'asc' ? '↑' : '↓';
+        applySort();
+      }
+
+      function enableExport() {
+        exportBtn.disabled = (rows.length === 0);
+        exportBtn.setAttribute('aria-disabled', String(exportBtn.disabled));
+      }
+
+      function toCSV(items) {
+        const headers = ['keyword', 'volume', 'volume_numeric', 'competition', 'opportunity_score', 'total_results', 'ai_analysis'];
+        const escape = (v) => `"${String(v ?? '').replaceAll('"', '""')}"`;
+        const lines = [headers.join(',')];
+        for (const r of items) {
+          lines.push(headers.map(h => escape(r[h] ?? '')).join(','));
+        }
+        return lines.join('\n');
+      }
+
+      function downloadCSV(filename, text) {
+        const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function resetAll(clearQuery = false) {
+        rows = [];
+        filtered = [];
+        setProgress(0);
+        logEl.innerHTML = '';
+        tbody.innerHTML = '';
+        renderStats([]);
+        if (clearQuery) queryEl.value = '';
+        enableExport();
+      }
+
+      // Build readable analysis text from results
+      function renderAnalysis(results) {
+        if (!results || !Array.isArray(results.keywords) || results.keywords.length === 0) {
+          analysisContent.textContent = 'No analysis available.';
+          return;
+        }
+        const top = results.keywords.slice(0, 5);
+        const parts = top.map((r, i) => {
+          const tip = r.ai_analysis ? ` — ${r.ai_analysis}` : '';
+          return `${i + 1}. ${r.keyword}${tip}`;
+        });
+        analysisContent.innerHTML = `
+          <p><strong>Seed:</strong> ${results.seed_keyword}</p>
+          <p><strong>Top opportunities:</strong></p>
+          <ul>${parts.map(p => `<li>${p}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Mock stream (graceful fallback if SSE fails)
+      async function runMock(query) {
+        const samples = [
+          { keyword: `${query} ideas`, volume: "1K-10K", volume_numeric: 1600, competition: 28, total_results: 540000, opportunity_score: (1600/1000)-28, ai_analysis: 'Good volume with manageable competition; target list posts and beginner guides.' },
+          { keyword: `${query} for beginners`, volume: "1K-10K", volume_numeric: 1300, competition: 22, total_results: 320000, opportunity_score: (1300/1000)-22, ai_analysis: 'Low competition; produce simple how-to tutorials.' },
+          { keyword: `best ${query} 2025`, volume: "1K-10K", volume_numeric: 950, competition: 35, total_results: 1200000, opportunity_score: (950/1000)-35, ai_analysis: 'Competitive; differentiate with updated comparisons.' },
+          { keyword: `${query} vs alternative`, volume: "500-1K", volume_numeric: 720, competition: 31, total_results: 880000, opportunity_score: (720/1000)-31 },
+          { keyword: `${query} pricing`, volume: "500-1K", volume_numeric: 540, competition: 18, total_results: 220000, opportunity_score: (540/1000)-18 },
+          { keyword: `cheap ${query}`, volume: "500-1K", volume_numeric: 480, competition: 25, total_results: 410000, opportunity_score: (480/1000)-25 },
+          { keyword: `how to choose ${query}`, volume: "500-1K", volume_numeric: 820, competition: 29, total_results: 610000, opportunity_score: (820/1000)-29 },
+        ];
+        addLog('Starting mock research...');
+        for (let i = 0; i < samples.length; i++) {
+          await sleep(300);
+          const r = samples[i];
+          rows.push(r);
+          applyFilter();
+          setProgress(((i + 1) / samples.length) * 85);
+          addLog(`Found: ${r.keyword} (Vol ${r.volume_numeric}, Comp ${r.competition})`);
+        }
+        await sleep(400);
+        setProgress(95);
+        renderAnalysis({ seed_keyword: query, keywords: rows });
+        addLog('Generated AI analysis.');
+        await sleep(200);
+        setProgress(100);
+        addLog('Done.');
+        setRunning(false);
+        enableExport();
+      }
+
+      async function startStream(query) {
+        return new Promise((resolve) => {
+          let finished = false;
+          try {
+            // <FIX> align with backend: it expects ?query=, not ?seed=
+            es = new EventSource(`/api/research/stream?query=${encodeURIComponent(query)}`);
+          } catch (e) {
+            resolve(false);
+            return;
+          }
+
+          es.addEventListener('open', () => {
+            addLog('Connected to stream.');
+          });
+
+          // Backend sends plain progress lines as default "message" events
+          es.addEventListener('message', (ev) => {
+            addLog(ev.data);
+          });
+
+          // Backend dispatches final payload via custom "result" event
+          es.addEventListener('result', (ev) => {
+            try {
+              const results = JSON.parse(ev.data);
+              rows = Array.isArray(results.keywords) ? results.keywords : [];
+              applyFilter();
+              renderAnalysis(results);
+              setProgress(100);
+              finished = true;
+              try { es && es.close(); } catch {}
+              es = null;
+              setRunning(false);
+              enableExport();
+              addLog('Done.');
+              resolve(true);
+            } catch {
+              addLog('Error: failed to parse result payload.');
+            }
+          });
+
+          es.addEventListener('error', () => {
+            if (!finished) {
+              addLog('Stream error — switching to mock data.');
+              try { es && es.close(); } catch {}
+              es = null;
+              resolve(false);
+            }
+          });
+        });
+      }
+
+      // Events
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (running) return;
+
+        const query = queryEl.value.trim();
+        if (!query) {
+          queryEl.focus();
+          return;
+        }
+
+        resetAll(false);
+        setRunning(true);
+        addLog(`Starting research for: "${query}"`);
+        setProgress(5);
+
+        const ok = await startStream(query);
+        if (!ok) {
+          await runMock(query);
+        }
+      });
+
+      clearBtn.addEventListener('click', () => {
+        resetAll(true);
+        addLog('Cleared.');
+      });
+
+      filterEl.addEventListener('input', () => {
+        applyFilter();
+      });
+
+      exportBtn.addEventListener('click', () => {
+        const list = filtered.length ? filtered : rows;
+        const csv = toCSV(list);
+        const base = (queryEl.value.trim() || 'keywords')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        downloadCSV(`${base || 'keywords'}.csv`, csv);
+      });
+
+      // Sort handlers (thead delegation)
+      document.querySelectorAll('th.sortable').forEach(th => {
+        th.addEventListener('click', () => updateSort(th));
+        th.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            updateSort(th);
+          }
+        });
+        th.setAttribute('tabindex', '0');
+        th.setAttribute('role', 'button');
+        th.setAttribute('aria-pressed', 'false');
+      });
+
+      // Initial
+      applyFilter();
+      enableExport();
+    </script>
+  </body>
+</html>
